@@ -1,24 +1,45 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { User } from './user.model';
+import * as AuthActions from '../auth/store/auth.actions';
+import * as fromApp from '../store/app.reducer';
+import { Store } from '@ngrx/store';
 
-interface AuthResponseData {
+export interface AuthResponseData {
     kind: string;
     idToken: string;
     email: string;
     refreshToken: string;
-    expiredIn: string;
+    expiresIn: string;
     localId: string;
+    registered?: boolean;
 }
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-    constructor(private http: HttpClient) { }
-    sinUp(email: string, password: string): Observable<AuthResponseData> {
-        return this.http.post<AuthResponseData>(' https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBfr-E9RYND56BjO7rQq2P5O3Ukk7SZFPY',
-            {
-                email,
-                password,
-                returnSecureToken: true
-            });
+    // user = new BehaviorSubject<User>(null);
+    private tokenExpirationTimer: any;
+    constructor(private store: Store<fromApp.AppState>) { }
+
+    logout(): void {
+        this.store.dispatch(new AuthActions.Logout());
+        localStorage.removeItem('userData');
+        if (this.tokenExpirationTimer) {
+            clearTimeout(this.tokenExpirationTimer);
+        }
+        this.tokenExpirationTimer = null;
+    }
+
+    setLogoutTimer(expirationDuration: number) {
+        this.tokenExpirationTimer = setTimeout(() => {
+            this.store.dispatch(new AuthActions.Logout());
+        }, expirationDuration);
+    }
+
+    clearLogoutTimer() {
+        if (this.tokenExpirationTimer) {
+            clearTimeout(this.tokenExpirationTimer);
+            this.tokenExpirationTimer = null;
+        }
     }
 }

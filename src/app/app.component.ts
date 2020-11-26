@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { AuthService } from './auth/auth.service';
+import * as fromApp from './store/app.reducer';
+import * as AuthActions from './auth/store/auth.actions';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  title = 'exercise5';
-  loadFeature ='others'
-
-  onNavigate(feature: string) {
-    this.loadFeature=feature
+export class AppComponent implements OnInit {
+  constructor(private store: Store<fromApp.AppState>) { }
+  ngOnInit(): void {
+    this.store.dispatch(new AuthActions.AutoLogin());
   }
 }
