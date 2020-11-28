@@ -1,0 +1,13 @@
+{
+    "vim.statusBarColors.visual": "",
+    "vim.handleKeys": {
+
+        "<C-d>": true
+    },
+    "vim.commandLineModeKeyBindings": [
+
+    ],
+    "vim.visualModeKeyBindingsNonRecursive": [
+
+    ]
+}

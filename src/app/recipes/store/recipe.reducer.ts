@@ -1,4 +1,6 @@
 import { Actions } from '@ngrx/effects';
+import { createReducer, on } from '@ngrx/store';
+
 import { Recipe } from '../recipe.model';
 import * as RecipesActions from './recipe.action';
 
@@ -9,6 +11,18 @@ export interface State {
 const initialState: State = {
     recipes: []
 };
+
+const reducer = createReducer(
+    initialState,
+    on(RecipesActions.setRecipes, (state, action) => ({
+        ...state,
+        recipes:[...action.recipes]
+    })),
+    on(RecipesActions.addRecipe, (state, action) => ({
+        ...state,
+        recipes: [...state.recipes, action.recipe]
+    }))
+)
 
 export const recipeReducer = (state: State = initialState, action: RecipesActions.RecipesActions) => {
     switch (action.type) {
